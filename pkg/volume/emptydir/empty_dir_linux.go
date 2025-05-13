@@ -112,5 +112,6 @@ func (m *realMountDetector) GetMountMedium(path string, requestedMedium v1.Stora
 		}
 		return v1.StorageMediumHugePages, !notMnt, pageSize, nil
 	}
-	return v1.StorageMediumDefault, !notMnt, nil, nil
+	klog.V(5).Infof("Mount type %v is not tmpfs or hugetlbfs", buf.Type)
+	return v1.StorageMediumMemory, !notMnt, nil, nil
 }
