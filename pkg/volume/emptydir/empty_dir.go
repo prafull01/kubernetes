@@ -518,13 +518,8 @@ func (ed *emptyDir) TearDownAt(dir string) error {
 		return err
 	}
 	if isMnt {
-		if medium == v1.StorageMediumMemory {
-			ed.medium = v1.StorageMediumMemory
-			return ed.teardownTmpfsOrHugetlbfs(dir)
-		} else if medium == v1.StorageMediumHugePages {
-			ed.medium = v1.StorageMediumHugePages
-			return ed.teardownTmpfsOrHugetlbfs(dir)
-		}
+		ed.medium = medium
+		return ed.teardownMountedDir(dir)
 	}
 	// assume StorageMediumDefault
 	return ed.teardownDefault(dir)
@@ -547,7 +542,7 @@ func (ed *emptyDir) teardownDefault(dir string) error {
 	return os.RemoveAll(dir)
 }
 
-func (ed *emptyDir) teardownTmpfsOrHugetlbfs(dir string) error {
+func (ed *emptyDir) teardownMountedDir(dir string) error {
 	if ed.mounter == nil {
 		return fmt.Errorf("memory storage requested, but mounter is nil")
 	}
